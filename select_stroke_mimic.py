@@ -8,7 +8,7 @@ stroke_icd = ['430', '431', '432', '4320', '4321', '4329', '433', '4330', '4331'
              '434', '4340', '4341', '4349', '43491', '435', '4350', '4351', '4352', '4353', '4358', '4359', '436', '437',
              '4370', '4371', '4372', '4373', '4374', '4375', '4376', '4377', '4378', '4379']
 
-cerebrovascular_icd = ['4389', '85226', '85205', '85225', '43811', '43820', '43889']
+cerebrovascular_icd = ['4389', '85226', '85205', '85225', '43811', '43820', '43889', '43310']
 
 icd_codes = stroke_icd+cerebrovascular_icd
 
@@ -23,7 +23,8 @@ selected_icd = selected_icd.loc[~(
     selected_icd['診斷類別1'].isin(icd_codes) | selected_icd['診斷類別2'].isin(icd_codes) |
     selected_icd['診斷類別3'].isin(icd_codes) | selected_icd['診斷類別4'].isin(icd_codes) |
     selected_icd['診斷類別5'].isin(icd_codes) | selected_icd['診斷類別6'].isin(icd_codes) |
-    selected_icd['診斷類別7'].isin(icd_codes)
+    selected_icd['診斷類別7'].isin(icd_codes) | selected_icd['診斷類別8'].isin(icd_codes) |
+    selected_icd['診斷類別9'].isin(icd_codes)
 )]
 
 # is stroke at emergency
