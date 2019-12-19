@@ -13,7 +13,7 @@ cerebrovascular_icd = ['4389', '85226', '85205', '85225', '43811', '43820', '438
 icd_codes = stroke_icd+cerebrovascular_icd
 
 # not stroke when being hospitalized
-icd = pd.read_csv('14653_疾病分類統計檔_1.csv')
+icd = pd.read_csv('csv/14653_疾病分類統計檔_1.csv')
 selected_icd = icd[['歸戶代號', '資料年月', '輸入日期', '診斷類別1', '診斷類別名稱1', '診斷類別2','診斷類別名稱2',
                     '診斷類別3', '診斷類別名稱3', '診斷類別4', '診斷類別名稱4', '診斷類別5', '診斷類別名稱5',
                     '診斷類別6', '診斷類別名稱6', '診斷類別7', '診斷類別名稱7', '診斷類別8', '診斷類別名稱8',
