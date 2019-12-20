@@ -10,7 +10,7 @@ import csv
 
 dicom_keywords = ['ImageType', 'PatientID', 'PatientBirthDate', 'PatientSex', 'StudyDate', 'SeriesDate', 'PatientWeight',
                   'ContentDate', 'StudyTime', 'SeriesTime', 'ContentTime', 'AccessionNumber', 'RequestAttributesSequence',
-                  'PerformedProcedureStepID', 'requestid', 'StudyID', 'Modality', 'SeriesNumber']
+                  'PerformedProcedureStepID', 'requestid', 'StudyID', 'Modality', 'InstanceNumber']
 
 
 root_dir = '//nindsdirfs//shares//BIS//Amar//Stroke_Shared_Folder//2019_07_02_CGRD_Stroke/Images//'
@@ -27,7 +27,7 @@ with open('dicom_header.csv', mode='w', newline='') as dicom_header_file:
                 for srs_dir in srs_dirs:
                     image_files = glob.glob(os.path.join(root_dir, patients_dir, sdy_dir, srs_dir, '*.DCM'))
                     for image_file in image_files:
-                        head_info = pydicom.filereader.dcmread(image_file, stop_before_pixels=True)
+                        head_info = pydicom.filereader.dcmread(image_file, stop_before_pixels=True, force=True)
                         head_info_list = [image_file]
                         # M1: iterate all of elements
                         # for elem in head_info:
@@ -44,5 +44,5 @@ with open('dicom_header.csv', mode='w', newline='') as dicom_header_file:
                             else:
                                 head_info_list.append(elem.value)
                         csv_writer.writerow(head_info_list)
-                        print(patients_dir)
+        print(patients_dir)
 print('done')
