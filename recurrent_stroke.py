@@ -22,6 +22,7 @@ recurrent_stroke = recurrent_stroke.groupby('歸戶代號').apply(pd.DataFrame.s
 
 # Get recurrent stroke patient's first time
 recurrent_stroke_first = recurrent_stroke[(~recurrent_stroke.duplicated(['歸戶代號'], keep='first'))]
+recurrent_stroke_first.reset_index(drop=True, inplace=True)
 # recurrent_stroke_first.to_csv('see2.csv', index=False, encoding='utf-8-sig')
 print(recurrent_stroke.shape)
 
@@ -31,10 +32,21 @@ non_recurrent_stroke = stroke_df[~stroke_df['歸戶代號'].isin(recurrent_strok
 # non_recurrent_stroke.to_csv('see3.csv', index=False, encoding='utf-8-sig')
 print(non_recurrent_stroke.shape)
 
-
+# Prepare the latest version of each discharge
 discharge_note = pd.read_csv(os.path.join('csv', '15344_出院病摘_1.csv'))
-q = stroke_df['歸戶代號'].isin(recurrent_stroke_ID)
-z = stroke_df['資料年月'].isin(recurrent_stroke_first['資料年月'])
-# a = discharge_note.loc[]
+discharge_note_uniq = discharge_note[(~discharge_note.duplicated(['住院號'], keep=False))]
+discharge_note_duplicate = discharge_note[~discharge_note['住院號'].isin(discharge_note_uniq['住院號'])]
+discharge_note_duplicate = discharge_note_duplicate.groupby('住院號').apply(pd.DataFrame.sort_values, ['存檔日期', '異動次數'], ascending=True)
+discharge_note_duplicate_last = discharge_note_duplicate[~(discharge_note_duplicate.duplicated(['住院號'], keep='last'))]
+discharge_note_latest = pd.concat([discharge_note_uniq, discharge_note_duplicate_last])
 
+# Get recurrent and non-recurrent stroke patient's discharge note
+recurrent_note = pd.merge(discharge_note_latest, recurrent_stroke_first, how='inner', on=['歸戶代號', '資料年月', '住院號'])
+recurrent_note['label'] = 1
+non_recurrent_note = pd.merge(discharge_note_latest, non_recurrent_stroke, how='inner', on=['歸戶代號', '資料年月', '住院號'])
+non_recurrent_note['label'] = 0
+
+result = pd.concat([recurrent_note, non_recurrent_note])
+result = result[['歸戶代號', '資料年月', '住院號', '主訴', '病史', '手術日期、方法及發現', '住院治療經過', 'label']]
+result.to_csv('recurrent_stroke_ds.csv', index=False, encoding='utf-8-sig')
 print('done')
