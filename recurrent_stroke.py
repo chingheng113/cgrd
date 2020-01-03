@@ -28,8 +28,8 @@ print(recurrent_stroke.shape)
 
 # Find non-recurrent stroke patients
 recurrent_stroke_ID = recurrent_stroke_first['歸戶代號']
-non_recurrent_stroke = stroke_df[~stroke_df['歸戶代號'].isin(recurrent_stroke_ID)]
-# non_recurrent_stroke.to_csv('see3.csv', index=False, encoding='utf-8-sig')
+non_readmin = icd_statistic.drop_duplicates(subset=['歸戶代號'], keep=False)
+non_recurrent_stroke = stroke_df[stroke_df['歸戶代號'].isin(non_readmin['歸戶代號'])]
 print(non_recurrent_stroke.shape)
 
 # Prepare the latest version of each discharge
