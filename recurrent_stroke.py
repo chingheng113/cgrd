@@ -7,7 +7,6 @@ import os
 icd_statistic = pd.read_csv(os.path.join('csv', '15344_疾病分類統計檔_1.csv')) #icd_10
 icd_statistic.dropna(axis=0, subset=['診斷類別1', '診斷類別2', '診斷類別3'], inplace=True)
 neural_df = icd_statistic.loc[icd_statistic['舊科別名稱'] == '神經內科']
-
 # Find stroke patients
 selected_icd_codes = ('I60', 'I61', 'I62', 'I63', 'I64', 'I65', 'I66', 'I67', 'I68', 'I69',
                       '430', '431', '432', '433', '434', '435', '436', '437', '438')
@@ -63,7 +62,7 @@ recurrent_median_days = np.median(recurrent_time.dt.days)
 recurrent_median_day = datetime.timedelta(days=recurrent_median_days)
 data_last_date = datetime.datetime.strptime(str(max(result['住院日期'])), '%Y%m%d')
 recurrent_threshold = data_last_date - recurrent_median_day
-
+result = result[pd.to_datetime(result['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold]
 # recurrent_threshold2 = np.mean(recurrent_time.dt.days)
 # recurrent_time.dt.days.plot.hist(bins=24, alpha=0.5)
 # plt.show()
