@@ -46,29 +46,25 @@ discharge_note_duplicate = discharge_note_duplicate.groupby('住院號').apply(p
 discharge_note_duplicate_last = discharge_note_duplicate[~(discharge_note_duplicate.duplicated(['住院號'], keep='last'))]
 discharge_note_latest = pd.concat([discharge_note_uniq, discharge_note_duplicate_last])
 
-# Get recurrent and non-recurrent stroke patient's discharge note
+# Get recurrent stroke patient's discharge note
 recurrent_note = pd.merge(discharge_note_latest, recurrent_stroke_first, how='inner', on=['歸戶代號', '資料年月', '住院號'])
 recurrent_note['label'] = 1
+#  Get non-recurrent patient, but excludes patient who has not enough follow-up period
 non_recurrent_note = pd.merge(discharge_note_latest, non_recurrent_stroke, how='inner', on=['歸戶代號', '資料年月', '住院號'])
 non_recurrent_note['label'] = 0
-
-result = pd.concat([recurrent_note, non_recurrent_note])
-
 # Calculate recurrent stroke average time for data period
 first_time = pd.to_datetime(recurrent_stroke_first['住院日期'], format='%Y%m%d', errors='coerce')
 second_time = pd.to_datetime(recurrent_stroke_second['住院日期'], format='%Y%m%d', errors='coerce')
 recurrent_time = second_time - first_time
 recurrent_median_days = np.median(recurrent_time.dt.days)
 recurrent_median_day = datetime.timedelta(days=recurrent_median_days)
-data_last_date = datetime.datetime.strptime(str(max(result['住院日期'])), '%Y%m%d')
+data_last_date = datetime.datetime.strptime(str(max(non_recurrent_note['住院日期'])), '%Y%m%d')
 recurrent_threshold = data_last_date - recurrent_median_day
-result = result[pd.to_datetime(result['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold]
 # recurrent_threshold2 = np.mean(recurrent_time.dt.days)
 # recurrent_time.dt.days.plot.hist(bins=24, alpha=0.5)
 # plt.show()
-
-
-
+non_recurrent_note = non_recurrent_note[pd.to_datetime(non_recurrent_note['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold]
+result = pd.concat([recurrent_note, non_recurrent_note])
 result = result[['歸戶代號', '資料年月', '住院號', '主訴', '病史', '手術日期、方法及發現', '住院治療經過', 'label']]
 result.to_csv('recurrent_stroke_ds.csv', index=False, encoding='utf-8-sig')
 print('done')
