@@ -37,6 +37,27 @@ recurrent_stroke_ID = recurrent_stroke_first['歸戶代號']
 non_readmin = icd_statistic.drop_duplicates(subset=['歸戶代號'], keep=False)
 non_recurrent_stroke = stroke_df[stroke_df['歸戶代號'].isin(non_readmin['歸戶代號'])]
 
+# Calculate recurrent stroke average time for data period
+first_time = pd.to_datetime(recurrent_stroke_first['住院日期'], format='%Y%m%d', errors='coerce')
+second_time = pd.to_datetime(recurrent_stroke_second['住院日期'], format='%Y%m%d', errors='coerce')
+recurrent_time = second_time - first_time
+recurrent_median_days = np.median(recurrent_time.dt.days)
+recurrent_mean_days = np.mean(recurrent_time.dt.days)
+recurrent_median_day = datetime.timedelta(days=recurrent_median_days)
+data_last_date = datetime.datetime.strptime(str(max(non_recurrent_note['住院日期'])), '%Y%m%d')
+recurrent_threshold = data_last_date - recurrent_median_day
+recurrent_threshold2 = np.mean(recurrent_time.dt.days)
+recurrent_time.dt.days.plot.hist(bins=133, alpha=0.5)
+plt.show()
+
+
+
+
+
+
+
+
+
 # Prepare the latest version of each discharge
 discharge_note = pd.read_csv(os.path.join('csv', '15344_出院病摘_1.csv')) #icd_10_15344
 discharge_note_uniq = discharge_note[(~discharge_note.duplicated(['住院號'], keep=False))]
@@ -53,19 +74,7 @@ recurrent_note.to_csv('recurrent_note.csv', index=False, encoding='utf-8-sig')
 non_recurrent_note = pd.merge(discharge_note_latest, non_recurrent_stroke, how='inner', on=['歸戶代號', '資料年月', '住院號'])
 non_recurrent_note['label'] = 0
 non_recurrent_note.to_csv('non_recurrent_note.csv', index=False, encoding='utf-8-sig')
-
-# Calculate recurrent stroke average time for data period
-first_time = pd.to_datetime(recurrent_stroke_first['住院日期'], format='%Y%m%d', errors='coerce')
-second_time = pd.to_datetime(recurrent_stroke_second['住院日期'], format='%Y%m%d', errors='coerce')
-recurrent_time = second_time - first_time
-recurrent_median_days = np.median(recurrent_time.dt.days)
-recurrent_mean_days = np.mean(recurrent_time.dt.days)
-recurrent_median_day = datetime.timedelta(days=recurrent_median_days)
-data_last_date = datetime.datetime.strptime(str(max(non_recurrent_note['住院日期'])), '%Y%m%d')
-recurrent_threshold = data_last_date - recurrent_median_day
-recurrent_threshold2 = np.mean(recurrent_time.dt.days)
-recurrent_time.dt.days.plot.hist(bins=133, alpha=0.5)
-plt.show()
+# Cut follow-up
 non_recurrent_note_cut = non_recurrent_note[pd.to_datetime(non_recurrent_note['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold]
 #
 result = pd.concat([recurrent_note, non_recurrent_note_cut])
