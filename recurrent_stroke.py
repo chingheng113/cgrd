@@ -68,7 +68,7 @@ recurrent_note_30_over = recurrent_note[recurrent_note['recurrent_day'] > 30]
 recurrent_threshold_30 = non_recurrent_note_last_date - datetime.timedelta(days=30)
 # non_recurrent still includes over 30-days recurrent stroke
 non_recurrent_note_30 = non_recurrent_note[pd.to_datetime(non_recurrent_note['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold_30]
-# non_recurrent_note_30 = pd.concat([recurrent_note_30_over, non_recurrent_note_30])
+non_recurrent_note_30 = pd.concat([recurrent_note_30_over, non_recurrent_note_30])
 non_recurrent_note_30['label'] = 0
 result_30 = pd.concat([recurrent_note_30, non_recurrent_note_30])
 result_30 = result_30[['歸戶代號', '資料年月', '住院號', '主訴', '病史', '手術日期、方法及發現', '住院治療經過', 'label']]
@@ -81,7 +81,7 @@ recurrent_note_90_over = recurrent_note[recurrent_note['recurrent_day'] > 90]
 recurrent_threshold_90 = non_recurrent_note_last_date - datetime.timedelta(days=90)
 # non_recurrent still includes over 90-days recurrent stroke
 non_recurrent_note_90 = non_recurrent_note[pd.to_datetime(non_recurrent_note['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold_90]
-# non_recurrent_note_90 = pd.concat([recurrent_note_90_over, non_recurrent_note_90])
+non_recurrent_note_90 = pd.concat([recurrent_note_90_over, non_recurrent_note_90])
 non_recurrent_note_90['label'] = 0
 result_90 = pd.concat([recurrent_note_90, non_recurrent_note_90])
 result_90 = result_90[['歸戶代號', '資料年月', '住院號', '主訴', '病史', '手術日期、方法及發現', '住院治療經過', 'label']]
@@ -94,7 +94,7 @@ recurrent_note_180_over = recurrent_note[recurrent_note['recurrent_day'] > 180]
 recurrent_threshold_180 = non_recurrent_note_last_date - datetime.timedelta(days=180)
 # non_recurrent still includes over 180-days recurrent stroke
 non_recurrent_note_180 = non_recurrent_note[pd.to_datetime(non_recurrent_note['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold_180]
-# non_recurrent_note_180 = pd.concat([recurrent_note_180_over, non_recurrent_note_180])
+non_recurrent_note_180 = pd.concat([recurrent_note_180_over, non_recurrent_note_180])
 non_recurrent_note_180['label'] = 0
 result_180 = pd.concat([recurrent_note_180, non_recurrent_note_180])
 result_180 = result_180[['歸戶代號', '資料年月', '住院號', '主訴', '病史', '手術日期、方法及發現', '住院治療經過', 'label']]
@@ -107,7 +107,7 @@ recurrent_note_360_over = recurrent_note[recurrent_note['recurrent_day'] > 360]
 recurrent_threshold_360 = non_recurrent_note_last_date - datetime.timedelta(days=360)
 # non_recurrent still includes over 180-days recurrent stroke
 non_recurrent_note_360 = non_recurrent_note[pd.to_datetime(non_recurrent_note['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold_360]
-# non_recurrent_note_360 = pd.concat([recurrent_note_360_over, non_recurrent_note_360])
+non_recurrent_note_360 = pd.concat([recurrent_note_360_over, non_recurrent_note_360])
 non_recurrent_note_360['label'] = 0
 result_360 = pd.concat([recurrent_note_360, non_recurrent_note_360])
 result_360 = result_360[['歸戶代號', '資料年月', '住院號', '主訴', '病史', '手術日期、方法及發現', '住院治療經過', 'label']]
