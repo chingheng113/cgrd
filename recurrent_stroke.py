@@ -54,10 +54,10 @@ non_recurrent_note_last_date = datetime.datetime.strptime(str(max(non_recurrent_
 
 # === life time ===
 recurrent_threshold = non_recurrent_note_last_date - datetime.timedelta(days=np.median(recurrent_time.dt.days))
-non_recurrent_note = non_recurrent_note[pd.to_datetime(non_recurrent_note['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold]
+non_recurrent_note_cut = non_recurrent_note[pd.to_datetime(non_recurrent_note['住院日期'], format='%Y%m%d', errors='coerce') < recurrent_threshold]
 recurrent_note['label'] = 1
-non_recurrent_note['label'] = 0
-result = pd.concat([recurrent_note, non_recurrent_note])
+non_recurrent_note_cut['label'] = 0
+result = pd.concat([recurrent_note, non_recurrent_note_cut])
 result = result[['歸戶代號', '資料年月', '住院號', '主訴', '病史', '手術日期、方法及發現', '住院治療經過', 'label']]
 result.to_csv('recurrent_stroke_ds_all.csv', index=False, encoding='utf-8-sig')
 
