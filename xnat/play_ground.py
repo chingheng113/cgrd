@@ -1,10 +1,14 @@
 import pandas as pd
 import os
+import xnat
+import glob
 
-img_report_set = pd.read_csv('img_report_set.csv')
-i = '14AP35902X01'
-a = img_report_set[img_report_set.image_no == i].CONTENT.values
-with open("Output.txt", "w") as text_file:
-    text_file.write(a[0])
-print(os.path.realpath(text_file.name))
+# project_name = 'CGRD_test1'
+# # session = xnat.connect('http://xnat.ninds.nih.gov/', user='linc9', password='linc9')
+# # a = session.subjects['aaa']
+# # print(a)
+
+root_path = os.path.join('..', '1_100','*','')
+for a in glob.glob(root_path):
+    print(a.split('/')[2])
 print('done')

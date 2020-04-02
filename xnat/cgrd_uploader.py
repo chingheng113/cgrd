@@ -3,6 +3,7 @@ import zipfile
 import xnat
 import pydicom
 import pandas as pd
+import glob
 
 # https://xnat.readthedocs.io/en/latest/static/tutorial.html
 
@@ -49,32 +50,53 @@ def get_DICOM_info(root_path, patient_ID):
 
 
 def get_img_report(img_reports, image_No):
-    return img_reports[img_reports.image_no == image_No].CONTENT.values[0]
+    try:
+        return img_reports[img_reports.image_no == image_No].CONTENT.values[0]
+    except Exception:
+        return ''
 
 
 def report_uploader(session, experiment, img_report_set, image_No):
     report_text = get_img_report(img_report_set, image_No)
-    with open("report.txt", "w") as text_file:
-        text_file.write(report_text)
-    ext = session.create_object(experiment.uri)
-    resource = ext.resources.get('Report', None)
-    # If resource doesn't exist, just create it
-    if resource is None:
-        resource = session.classes.ResourceCatalog(parent=ext, label='Report')
-    resource.upload(os.path.realpath(text_file.name), 'report.txt')
-    # resource.upload_dir('/output/currsub')
-    os.remove(os.path.realpath(text_file.name))
+    if report_text != '':
+        with open("report.txt", "w") as text_file:
+            text_file.write(report_text)
+        ext = session.create_object(experiment.uri)
+        resource = ext.resources.get('Report', None)
+        # If resource doesn't exist, just create it
+        if resource is None:
+            resource = session.classes.ResourceCatalog(parent=ext, label='Report')
+        resource.upload(os.path.realpath(text_file.name), 'report.txt')
+        # resource.upload_dir('/output/currsub')
+        os.remove(os.path.realpath(text_file.name))
 
 
 if __name__ == '__main__':
+    # errors
+    # 4689770029AF324755F5E84267FDFCA0BA4948C4
+    # DEEBF652E69FD1EF3F6D291E1C3BDE6A4791181A
+    # F1D36B632A4136F3022DCA408889A2FB805066F7
+    # D8039D0E66E373D5679DB36EC1F311F6FF042870
+    # FDE4265345F936C505C4670DBC266A06A08F8DAA
+    # E9D7D8AA5029CD9AEA2AA6AC921C8D4C6BAA7F45
+    # B5F171F041F7DF4867140F7D3CCE7EE0CDEA8949
+    # D2B28AD1EE7D736D8980D42884350581F7BA5D8D
+    # 87F54C021BABE9BC174DECE79BBDEB77060EF4DE
+    # A8D1A62FC0C1EB86F5628DD91B824D59528050A8
+    # 45268D51D3BA31762B2363A937A5D143A060C934
     img_report_set = pd.read_csv('img_report_set.csv')
     project_name = 'CGRD_test1'
     session = xnat.connect('http://xnat.ninds.nih.gov/', user='linc9', password='linc9')
     root_path = os.path.join('..', '1_100')
-    patient_ID = '0E654727052662F183CE0A56D1030CF21CA06C95'
-    image_No = get_DICOM_info(root_path, patient_ID)
-    experiment = img_uploader(root_path, session, project_name, patient_ID, image_No)
-    report_uploader(session, experiment, img_report_set, image_No)
+    for subdir_name in glob.glob(os.path.join(root_path, '*', '')):
+        patient_ID = subdir_name.split('/')[2]
+        try:
+            image_No = get_DICOM_info(root_path, patient_ID)
+            experiment = img_uploader(root_path, session, project_name, patient_ID, image_No)
+            report_uploader(session, experiment, img_report_set, image_No)
+        except Exception:
+            print(patient_ID)
+            pass
     session.disconnect()
     print('done')
 
